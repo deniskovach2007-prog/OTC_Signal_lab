@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OTC Signal Lab — аналіз ринку</title>
+<style>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#18233b;--text:#edf3ff;--muted:#9aabc8;--line:#293653;--green:#35d39a;--red:#ff667d;--yellow:#ffd166;--blue:#7ba7ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1000px 500px at 20% -10%,#1a2d52 0,transparent 60%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:24px 16px 50px}.top{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:20px}
+.brand{display:flex;gap:12px;align-items:center}.logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,#69a5ff,#7e5cff);display:grid;place-items:center;font-weight:900;font-size:20px;color:#081022}
+h1{font-size:clamp(22px,4vw,32px);margin:0;letter-spacing:-.7px}.sub{color:var(--muted);margin:3px 0 0}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--muted);font-size:12px}
+.grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}.panel{background:linear-gradient(180deg,var(--panel),#10172a);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 12px 32px #0002}
+.panel h2{font-size:16px;margin:0 0 14px}.signal{display:flex;align-items:center;gap:14px;justify-content:space-between;flex-wrap:wrap;background:var(--panel2);padding:18px;border-radius:14px;border:1px solid var(--line)}
+.signalword{font-size:30px;font-weight:900;letter-spacing:-1px}.up{color:var(--green)}.down{color:var(--red)}.wait{color:var(--yellow)}.pairline{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:700;font-size:18px}.small{font-size:12px;color:var(--muted);font-weight:500}
+button,.button{cursor:pointer;border:0;border-radius:11px;padding:11px 15px;background:#729bff;color:#071022;font-weight:800;font-size:14px}button:hover{filter:brightness(1.08)}button.secondary{background:#24314e;color:var(--text);border:1px solid #344361}button.green{background:var(--green)}button:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}.metric{background:#0d1425;border:1px solid var(--line);border-radius:12px;padding:12px}.metric .label{font-size:12px;color:var(--muted)}.metric .value{font-size:22px;font-weight:800;margin-top:3px}
+.riskbar{height:11px;background:#26324a;border-radius:999px;overflow:hidden;margin:12px 0 7px}.riskfill{height:100%;width:50%;background:var(--yellow);border-radius:999px;transition:width .2s}.risklabels{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}input,select,textarea{width:100%;background:#0b1324;border:1px solid #344361;color:var(--text);border-radius:10px;padding:11px;font:inherit;outline:none}input:focus,select:focus,textarea:focus{border-color:var(--blue)}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{margin-bottom:12px}.hint{color:var(--muted);font-size:12px;margin-top:7px}.upload{border:1px dashed #4b5c7e;padding:15px;border-radius:12px;background:#0d1425}
+.status{padding:10px 12px;border-radius:10px;background:#0d1425;color:var(--muted);font-size:13px;margin-top:12px}.status.good{color:var(--green)}.status.bad{color:var(--red)}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{padding:9px 7px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--muted);font-weight:600}.tag{display:inline-block;border-radius:7px;padding:3px 7px;font-size:11px;background:#26324a;color:#c8d8ff}.disclaimer{margin-top:16px;padding:13px 15px;border:1px solid #66542b;background:#292315;border-radius:12px;color:#f6dda0;font-size:12px}.full{grid-column:1/-1}.footer{text-align:center;color:#7182a1;font-size:12px;margin-top:22px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}}@media(max-width:460px){.metrics{grid-template-columns:1fr 1fr}.fields{grid-template-columns:1fr}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="logo">S</div><div><h1>OTC Signal Lab</h1><p class="sub">Price Action · RSI · MACD · Bollinger · ATR</p></div></div>
+    <span class="pill">Локальний аналіз · без входу в акаунт</span>
+  </header>
+  <div class="grid">
+    <section class="panel">
+      <h2>Найкращий сигнал з наданих даних</h2>
+      <div class="signal">
+        <div><div class="small">Рекомендація</div><div id="signal" class="signalword wait">ОЧІКУВАННЯ</div><div id="reason" class="small">Завантажте свічки, щоб розрахувати сигнал.</div></div>
+        <div><div class="small">Пара</div><div class="pairline"><span id="pairOut">—</span><button class="secondary" id="copyPair" type="button">Скопіювати</button></div><div class="small" style="margin-top:7px">Експірація: <b id="expiryOut">1 хв</b></div></div>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="label">Оцінка сигналу</div><div class="value" id="confidence">—</div></div>
+        <div class="metric"><div class="label">Ризик умов</div><div class="value" id="riskNum">—</div></div>
+        <div class="metric"><div class="label">Свічок</div><div class="value" id="candleCount">0</div></div>
+      </div>
+      <h2 style="margin-top:20px">Шкала ризику ринку</h2>
+      <div class="riskbar"><div id="riskFill" class="riskfill"></div></div>
+      <div class="risklabels"><span>0 · нижчий ризик</span><b id="riskText">Немає даних</b><span>100 · вищий ризик</span></div>
+      <div class="actions"><button id="startBtn" class="green">▶ Аналізувати</button><button id="demoBtn" class="secondary">Завантажити демо</button><button id="clearBtn" class="secondary">Очистити</button></div>
+      <div id="status" class="status">Очікую на дані. Цей файл не підключається до Pocket Option і не відкриває угод.</div>
+    </section>
+    <section class="panel">
+      <h2>Дані ринку</h2>
+      <div class="fields">
+        <div class="field"><label for="pair">Валютна пара / OTC-інструмент</label><input id="pair" value="EUR/USD OTC" placeholder="EUR/USD OTC"></div>
+        <div class="field"><label for="expiry">Експірація сигналу</label><select id="expiry"><option value="1">1 хвилина (пріоритет)</option><option value="5">5 хвилин</option><option value="10">10 хвилин</option></select></div>
+      </div>
+      <div class="field"><label for="csvFile">Завантажити CSV зі свічками (OHLC)</label><div class="upload"><input id="csvFile" type="file" accept=".csv,text/csv"><div class="hint">Колонки: timestamp, open, high, low, close, volume (volume необов'язковий). Потрібно хоча б 60 свічок. Перша стрічка може містити назви колонок.</div></div></div>
+      <div class="field"><label for="csvText">Або вставити дані CSV вручну</label><textarea id="csvText" rows="5" placeholder="timestamp,open,high,low,close,volume&#10;2026-10-10 11:00,1.1020,1.1030,1.1015,1.1026,100"></textarea></div>
+      <button id="parseBtn" class="secondary">Використати вставлені дані</button>
+      <p class="hint">Важливо: CSV має містити реальні свічки саме того OTC-інструмента, який ви аналізуєте. Не вставляйте дані з різних пар або таймфреймів разом.</p>
+    </section>
+    <section class="panel full">
+      <h2>Що перевіряє алгоритм</h2>
+      <div class="fields">
+        <div><span class="tag">Price Action</span><p class="hint">Локальні підтримка/опір, структура максимумів і мінімумів, пробій рівня, свічковий імпульс.</p></div>
+        <div><span class="tag">RSI (14) + MACD (12, 26, 9)</span><p class="hint">Імпульс, напрямок MACD та можливе ослаблення руху. RSI сам по собі не створює сигнал.</p></div>
+        <div><span class="tag">Bollinger Bands (20, 2) + ATR (14)</span><p class="hint">Положення ціни у смугах і волатильність. Дуже висока або надто низька волатильність підвищує ризик.</p></div>
+        <div><span class="tag">M5 → M1</span><p class="hint">Якщо CSV має M1-свічки, алгоритм оцінює короткий напрямок і останню закриту свічку. Для справжнього підтвердження M5 потрібні окремі дані M5 — цей файл їх не вигадує.</p></div>
+      </div>
+      <div style="overflow-x:auto;margin-top:14px"><table><thead><tr><th>Показник</th><th>Значення</th><th>Інтерпретація</th></tr></thead><tbody id="indicators"><tr><td colspan="3" class="hint">Показники з'являться після аналізу даних.</td></tr></tbody></table></div>
+    </section>
+  </div>
+  <div class="disclaimer"><b>Попередження:</b> це аналітичний прототип, а не гарантований спосіб заробітку. Він не має доступу до Pocket Option, не може самостійно сканувати їхній OTC-ринок без легального джерела котирувань і не відкриває угоди. OTC-котирування можуть відрізнятися від публічних джерел. Спочатку перевіряйте алгоритм на історичних даних/демо; сигнали на 1 хвилину особливо шумні. «Ризик» — евристична оцінка волатильності та неоднозначності, не ймовірність збитку.</div>
+  <div class="footer">Один файл HTML · можна розмістити в GitHub Pages · дані обробляються у вашому браузері</div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+let candles=[];
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const avg=a=>a.length?a.reduce((s,v)=>s+v,0)/a.length:NaN;
+function ema(vals,period){let out=Array(vals.length).fill(null),k=2/(period+1),seed=null;for(let i=0;i<vals.length;i++){if(seed===null){if(i>=period-1){seed=avg(vals.slice(i-period+1,i+1));out[i]=seed}}else{seed=vals[i]*k+seed*(1-k);out[i]=seed}}return out}
+function sma(vals,p,i){return i>=p-1?avg(vals.slice(i-p+1,i+1)):null}
+function calcRSI(c,p=14){let out=Array(c.length).fill(null);for(let i=p;i<c.length;i++){let g=0,l=0;for(let j=i-p+1;j<=i;j++){let d=c[j]-c[j-1];if(d>0)g+=d;else l-=d}out[i]=l===0?100:100-100/(1+(g/p)/(l/p))}return out}
+function parseCSV(text){let lines=text.trim().split(/\r?\n/).filter(Boolean);if(lines.length<3)throw Error('Замало рядків у CSV.');let split=l=>l.split(/[,;\t]/).map(x=>x.trim().replace(/^"|"$/g,''));let first=split(lines[0]).map(x=>x.toLowerCase());let hasHeader=first.some(x=>/[a-z]/i.test(x)&&!/^[-+]?\d*\.?\d+$/.test(x));let rows=hasHeader?lines.slice(1):lines;let out=[];for(let line of rows){let a=split(line);let offset=hasHeader?0:0;let nums=a.map(x=>Number(x));let oi=0,hi=1,li=2,ci=3;if(hasHeader){const find=(names,def)=>{let i=first.findIndex(x=>names.some(n=>x.includes(n)));return i<0?def:i};oi=find(['open'],1);hi=find(['high'],2);li=find(['low'],3);ci=find(['close'],4)}else if(a.length>=5){oi=1;hi=2;li=3;ci=4}
+let o=Number(a[oi]),h=Number(a[hi]),l=Number(a[li]),c=Number(a[ci]);if([o,h,l,c].every(Number.isFinite)&&h>=Math.max(o,c)&&l<=Math.min(o,c))out.push({t:a[0],o,h,l,c,v:Number(a[5])||0})}
+if(out.length<60)throw Error('Знайдено '+out.length+' коректних свічок. Потрібно щонайменше 60.');return out}
+function analyse(data){const c=data.map(x=>x.c),h=data.map(x=>x.h),l=data.map(x=>x.l),o=data.map(x=>x.o),n=c.length,i=n-1;
+const rsi=calcRSI(c),e12=ema(c,12),e26=ema(c,26),macd=e12.map((v,j)=>v==null||e26[j]==null?null:v-e26[j]),sig=ema(macd.map(v=>v??0),9),hist=macd.map((v,j)=>v==null?null:v-(sig[j]??0));
+const trs=c.map((v,j)=>j===0?h[j]-l[j]:Math.max(h[j]-l[j],Math.abs(h[j]-c[j-1]),Math.abs(l[j]-c[j-1])));const atr=avg(trs.slice(-14));
+const mid=sma(c,20,i),sd=mid?Math.sqrt(avg(c.slice(i-19,i+1).map(v=>(v-mid)**2))):0,upper=mid+2*sd,lower=mid-2*sd;
+const resistance=Math.max(...h.slice(-21,-1)),support=Math.min(...l.slice(-21,-1));
+let score=0,notes=[];const lastRange=Math.max(h[i]-l[i],1e-12),body=c[i]-o[i],bodyPct=Math.abs(body)/lastRange;
+if(c[i]>c[i-1]&&c[i-1]>=c[i-2]){score+=1;notes.push('ціна зростає')}else if(c[i]<c[i-1]&&c[i-1]<=c[i-2]){score-=1;notes.push('ціна знижується')}
+if(c[i]>resistance){score+=2;notes.push('пробій опору')}else if(c[i]<support){score-=2;notes.push('пробій підтримки')}
+if(c[i-1]<support&&c[i]>support){score+=1;notes.push('можливий хибний пробій вниз')}else if(c[i-1]>resistance&&c[i]<resistance){score-=1;notes.push('можливий хибний пробій вгору')}
+if(rsi[i]!=null){if(rsi[i]>52&&rsi[i]<70)score+=1;else if(rsi[i]<48&&rsi[i]>30)score-=1;else if(rsi[i]>=70)notes.push('RSI у зоні перекупленості');else if(rsi[i]<=30)notes.push('RSI у зоні перепроданості')}
+if(hist[i]!=null){if(hist[i]>0&&hist[i]>=hist[i-1])score+=1;else if(hist[i]<0&&hist[i]<=hist[i-1])score-=1}
+if(bodyPct>.65){score+=Math.sign(body);notes.push('сильна свічка')}
+if(c[i]>mid)score+=.5;else score-=.5;
+const atrPct=atr/Math.max(c[i],1e-12)*100;const bandPct=(upper-lower)/Math.max(mid,1e-12)*100;
+let risk=20+Math.min(38,atrPct*6000)+Math.min(25,bandPct*2500);if(bodyPct>.85)risk+=10;if(Math.abs(score)<2)risk+=15;if(n<100)risk+=8;risk=clamp(Math.round(risk),1,100);
+let direction='WAIT';if(score>=3)direction='UP';else if(score<=-3)direction='DOWN';
+if(risk>=70||Math.abs(score)<3)direction='WAIT';
+let confidence=clamp(Math.round(50+Math.abs(score)*8-risk*.18),5,94);
+let interp=direction==='UP'?'Перевага покупців, але сигнал не гарантує результат.':direction==='DOWN'?'Перевага продавців, але сигнал не гарантує результат.':'Недостатньо підтверджень або ризик завеликий — краще пропустити.';
+return {direction,score,risk,confidence,interp,notes,rsi:rsi[i],macd:macd[i],hist:hist[i],atr,atrPct,mid,upper,lower,bandPct,support,resistance,bodyPct,candleCount:n}}
+function render(a){const s=$('signal');s.textContent=a.direction==='UP'?'ВГОРУ ↑':a.direction==='DOWN'?'ВНИЗ ↓':'НЕ ТОРГУВАТИ';s.className='signalword '+(a.direction==='UP'?'up':a.direction==='DOWN'?'down':'wait');$('pairOut').textContent=$('pair').value.trim()||'Невідома пара';$('expiryOut').textContent=$('expiry').value+' хв';$('reason').textContent=a.interp;$('confidence').textContent=a.confidence+'%';$('riskNum').textContent=a.risk+'/100';$('candleCount').textContent=a.candleCount;$('riskFill').style.width=a.risk+'%';$('riskFill').style.background=a.risk<35?'var(--green)':a.risk<65?'var(--yellow)':'var(--red)';$('riskText').textContent=a.risk<35?'Низький':a.risk<65?'Помірний':'Високий';
+const rows=[['RSI (14)',fmt(a.rsi),a.rsi>70?'Перекупленість':a.rsi<30?'Перепроданість':'Імпульс'],['MACD (12,26,9)',fmt(a.macd),a.macd>=0?'Вище нуля':'Нижче нуля'],['MACD histogram',fmt(a.hist),a.hist>=0?'Позитивна':'Негативна'],['Bollinger middle',fmt(a.mid),'Середня лінія (20)'],['Bollinger upper/lower',fmt(a.upper)+' / '+fmt(a.lower),'Смуги ±2σ'],['ATR (14)',fmt(a.atr),'ATR / ціна: '+fmt(a.atrPct)+'%'],['Підтримка / опір',fmt(a.support)+' / '+fmt(a.resistance),'Останні 20 свічок'],['Сила напрямку',a.score.toFixed(1),a.notes.join('; ')||'Немає чіткого патерну']];
+$('indicators').innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td><b>'+r[1]+'</b></td><td>'+r[2]+'</td></tr>').join('');
+$('status').textContent='Аналіз завершено. Це математична оцінка наданих свічок, а не гарантія прибутку.';$('status').className='status '+(a.direction==='WAIT'?'':'good')}
+function fmt(v){return Number.isFinite(v)?v.toPrecision(6):'—'}
+function run(){if(candles.length<60){$('status').textContent='Спочатку завантажте CSV або натисніть «Завантажити демо». Для реального аналізу потрібні реальні свічки.';$('status').className='status bad';return}render(analyse(candles))}
+$('startBtn').onclick=run;
+$('parseBtn').onclick=()=>{try{candles=parseCSV($('csvText').value);run()}catch(e){$('status').textContent=e.message;$('status').className='status bad'}};
+$('csvFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{$('csvText').value=await f.text();candles=parseCSV($('csvText').value);run()}catch(err){$('status').textContent=err.message;$('status').className='status bad'}};
+$('copyPair').onclick=async()=>{const t=$('pairOut').textContent;try{await navigator.clipboard.writeText(t);$('copyPair').textContent='Скопійовано ✓';setTimeout(()=>$('copyPair').textContent='Скопіювати',1300)}catch(e){prompt('Скопіюйте пару:',t)}};
+$('clearBtn').onclick=()=>{candles=[];$('csvText').value='';$('signal').textContent='ОЧІКУВАННЯ';$('signal').className='signalword wait';$('pairOut').textContent='—';$('confidence').textContent='—';$('riskNum').textContent='—';$('candleCount').textContent='0';$('riskFill').style.width='0%';$('riskText').textContent='Немає даних';$('indicators').innerHTML='<tr><td colspan="3">Показники з\\'являться після аналізу даних.</td></tr>';$('status').textContent='Дані очищено. Завантажте свічки для аналізу.';$('status').className='status'};
+$('demoBtn').onclick=()=>{let d=[],p=1.1;for(let i=0;i<180;i++){let drift=Math.sin(i/13)*.00009+(i%43<24?.000015:-.000012);let o=p,change=drift+(Math.random()-.49)*.00042,c=o+change,h=Math.max(o,c)+Math.random()*.00018,l=Math.min(o,c)-Math.random()*.00018;p=c;d.push({t:i,o,h,l,c,v:100})}candles=d;$('pair').value='EUR/USD OTC (ДЕМО)';$('status').textContent='Увага: це синтетичні демо-дані, не реальні котирування OTC.';$('status').className='status';run();$('status').textContent='Демо-аналіз виконано на синтетичних даних. Це НЕ торговий сигнал для реального ринку.'};
+</script>
+</body>
+</html>
